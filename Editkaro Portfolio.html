@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editkaro.in | Next-Gen Video Editing Agency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #06b6d4;
+            --bg-dark: #020617;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            scroll-behavior: smooth;
+        }
+
+        /* Modern Mesh Gradient Background */
+        .mesh-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(6, 182, 212, 0.15) 0%, transparent 50%);
+            z-index: -1;
+            filter: blur(80px);
+        }
+
+        .glass-header {
+            background: rgba(2, 6, 23, 0.7);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .glass-header.scrolled {
+            padding: 0.75rem 0;
+            background: rgba(2, 6, 23, 0.9);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        /* Scroll Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Enhanced Portfolio Card */
+        .work-card {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .work-card:hover {
+            transform: translateY(-12px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(2, 6, 23, 0.9) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .work-card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .filter-chip {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .filter-chip.active {
+            background: var(--accent-primary);
+            color: white;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+
+        /* Custom Modal Blur */
+        #video-modal {
+            backdrop-filter: blur(20px);
+        }
+
+        /* Toast Styling */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #8b5cf6;
+            color: #fff;
+            text-align: center;
+            border-radius: 12px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {
+                bottom: 0;
+                opacity: 0;
+            }
+
+            to {
+                bottom: 30px;
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeout {
+            from {
+                bottom: 30px;
+                opacity: 1;
+            }
+
+            to {
+                bottom: 0;
+                opacity: 0;
+            }
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.4);
+        }
+    </style>
+</head>
+
+<body class="selection:bg-violet-500/30">
+
+    <div class="mesh-bg"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 w-full z-50 glass-header px-6 py-5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                    <span class="font-black text-xl">E</span>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight">EDITKARO<span class="text-violet-500">.IN</span></span>
+            </div>
+
+            <div class="hidden md:flex items-center gap-10">
+                <a href="#home" class="text-sm font-semibold hover:text-violet-400 transition-colors">START</a>
+                <a href="#work" class="text-sm font-semibold hover:text-violet-400 transition-colors">PROJECTS</a>
+                <a href="#services" class="text-sm font-semibold hover:text-violet-400 transition-colors">SERVICES</a>
+                <button onclick="copyEmail()" class="btn-gradient px-6 py-2.5 rounded-full text-sm font-bold">HIRE US</button>
+            </div>
+
+            <button class="md:hidden text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section id="home" class="min-h-screen flex flex-col justify-center items-center px-6 pt-20">
+        <div class="text-center max-w-5xl">
+            <div class="reveal inline-block mb-6 px-4 py-1.5 rounded-full border border-violet-500/30 bg-violet-500/10 text-violet-400 text-xs font-bold tracking-[0.2em] uppercase">
+                Redefining Visual Storytelling
+            </div>
+            <h1 class="reveal text-6xl md:text-[100px] font-[900] leading-[0.9] tracking-tighter mb-8">
+                CREATING <br />
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400">DIGITAL GOLD</span>
+            </h1>
+            <p class="reveal text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed">
+                We are a boutique post-production agency focused on social-first video content that shatters engagement benchmarks.
+            </p>
+            <div class="reveal flex flex-wrap justify-center gap-6">
+                <a href="#work" class="btn-gradient px-10 py-5 rounded-2xl font-bold text-lg shadow-xl shadow-violet-500/20">VIEW OUR REEL</a>
+                <a href="#services" class="px-10 py-5 bg-white/5 border border-white/10 rounded-2xl font-bold text-lg hover:bg-white/10 transition-all">OUR SERVICES</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio -->
+    <section id="work" class="py-32 px-6 max-w-7xl mx-auto">
+        <div class="reveal flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+            <div class="max-w-xl">
+                <h2 class="text-5xl font-extrabold mb-6">Selected <span class="text-cyan-400 underline decoration-violet-500/50 underline-offset-8">Works</span></h2>
+                <p class="text-slate-400 text-lg">A curated selection of high-impact edits across gaming, fashion, and tech.</p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <button class="filter-chip active px-6 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold" data-filter="all">All</button>
+                <button class="filter-chip px-6 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold" data-filter="short">Shorts</button>
+                <button class="filter-chip px-6 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold" data-filter="gaming">Gaming</button>
+                <button class="filter-chip px-6 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold" data-filter="ads">Ads</button>
+                <button class="filter-chip px-6 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm font-bold" data-filter="anime">Anime</button>
+            </div>
+        </div>
+
+        <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Dynamic Content -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950/50 border-t border-white/5 pt-20 pb-10 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
+                <div class="lg:col-span-2">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center font-bold">E</div>
+                        <span class="text-2xl font-black">EDITKARO.IN</span>
+                    </div>
+                    <p class="text-slate-500 max-w-sm text-lg leading-relaxed">
+                        Helping brands and creators dominate social media through precision-engineered video editing and marketing.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-6 text-sm uppercase tracking-widest text-violet-400">Navigation</h4>
+                    <ul class="space-y-4 text-slate-400">
+                        <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Portfolio</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-6 text-sm uppercase tracking-widest text-cyan-400">Socials</h4>
+                    <ul class="space-y-4 text-slate-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Instagram</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">YouTube</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Discord</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Behance</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6 pt-10 border-t border-white/5 text-slate-600 text-sm">
+                <p>© 2024 Editkaro Digital. Build for the future.</p>
+                <div class="flex gap-8">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Video Modal -->
+    <div id="video-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/90 p-6">
+        <div class="absolute inset-0" onclick="closeVideo()"></div>
+        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-[32px] overflow-hidden shadow-2xl scale-95 opacity-0 transition-all duration-300" id="modal-container">
+            <button onclick="closeVideo()" class="absolute top-6 right-6 z-10 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-lg">&times;</button>
+            <div id="modal-loader" class="absolute inset-0 flex items-center justify-center">
+                <div class="w-16 h-16 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin"></div>
+            </div>
+            <div id="modal-content" class="w-full h-full flex items-center justify-center text-center">
+                <div class="p-12">
+                    <h3 id="modal-title" class="text-4xl font-black mb-4">Project Title</h3>
+                    <p class="text-violet-400 font-bold tracking-widest uppercase text-sm mb-8">Production Sample</p>
+                    <div class="w-24 h-24 rounded-full bg-violet-600 mx-auto flex items-center justify-center shadow-2xl shadow-violet-500/50 cursor-pointer hover:scale-110 transition-transform">
+                        <span class="text-4xl">▶</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast">Copied to clipboard!</div>
+
+    <script>
+        // Project Data
+        const projects = [{
+                id: 1,
+                title: "Cyberpunk Reel 2024",
+                category: "short",
+                type: "Viral Short",
+                gradient: "from-violet-600 to-indigo-800"
+            },
+            {
+                id: 2,
+                title: "Valorant Masters",
+                category: "gaming",
+                type: "Esports Montage",
+                gradient: "from-red-500 to-orange-800"
+            },
+            {
+                id: 3,
+                title: "Modern Echo Ad",
+                category: "ads",
+                type: "Commercial",
+                gradient: "from-cyan-500 to-blue-700"
+            },
+            {
+                id: 4,
+                title: "Attack on Titan AMV",
+                category: "anime",
+                type: "Fan Edit",
+                gradient: "from-emerald-500 to-teal-800"
+            },
+            {
+                id: 5,
+                title: "Soccer Skill Lab",
+                category: "short",
+                type: "Sports Content",
+                gradient: "from-amber-500 to-orange-600"
+            },
+            {
+                id: 6,
+                title: "Minimalist Brand",
+                category: "ads",
+                type: "eCommerce Ad",
+                gradient: "from-slate-500 to-slate-800"
+            }
+        ];
+
+        // Intersection Observer for Reveal
+        const observerOptions = {
+            threshold: 0.1
+        };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        // Render Portfolio
+        function renderGrid(filter = 'all') {
+            const grid = document.getElementById('portfolio-grid');
+            grid.innerHTML = '';
+
+            const filtered = filter === 'all' ? projects : projects.filter(p => p.category === filter);
+
+            filtered.forEach((p, index) => {
+                const card = document.createElement('div');
+                card.className = `work-card reveal group`;
+                card.innerHTML = `
+                    <div class="aspect-[16/10] bg-gradient-to-br ${p.gradient} relative">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                             <div class="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center font-bold">PLAY</div>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <span class="text-xs font-black tracking-widest text-violet-400 uppercase">${p.type}</span>
+                        <h3 class="text-2xl font-bold mt-2 group-hover:text-violet-400 transition-colors">${p.title}</h3>
+                    </div>
+                    <div class="card-overlay"></div>
+                `;
+                card.onclick = () => openVideo(p);
+                grid.appendChild(card);
+                observer.observe(card);
+            });
+        }
+
+        // Modal Controls
+        function openVideo(project) {
+            const modal = document.getElementById('video-modal');
+            const container = document.getElementById('modal-container');
+            document.getElementById('modal-title').innerText = project.title;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            setTimeout(() => {
+                container.classList.remove('scale-95', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            }, 50);
+
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideo() {
+            const modal = document.getElementById('video-modal');
+            const container = document.getElementById('modal-container');
+
+            container.classList.remove('scale-100', 'opacity-100');
+            container.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+
+        // Navbar Interaction
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Copy Email Interaction
+        function copyEmail() {
+            const email = "contact@editkaro.in";
+            const tempInput = document.createElement("input");
+            tempInput.value = email;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            const toast = document.getElementById("toast");
+            toast.className = "show";
+            setTimeout(() => {
+                toast.className = toast.className.replace("show", "");
+            }, 3000);
+        }
+
+        // Filters
+        document.querySelectorAll('.filter-chip').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderGrid(btn.dataset.filter);
+            });
+        });
+
+        // Initialize
+        window.onload = () => {
+            renderGrid();
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        };
+    </script>
+</body>
+
+</html>
